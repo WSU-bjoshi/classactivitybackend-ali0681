@@ -1,21 +1,30 @@
-let nextId = 3;
+// import { getTodosService, createTodoService,toggleTodoByIdService,deleteTodoByIdService } from "../services/todo.service.js";
 
-const todos =[
-    {id:1, task:"Try to have fun with express", donr:false},
-    {id:2, task:"buy eggs", done:false}
-]
+import {getTodosService, createTodoService, toggleTodoByIdService, deleteTodoByIdService} from "../services/todo.service.js";
 
-export function listTodos(req,res){
-    res.json({count: listTodos.length, todos});
+export async function listTodos(req, res){
+    const todos = await getTodosService();
+    res.json({count: todos.length, todos});
 }
 
-export function createTodos(req,res){
-    const {task} = req.body;
-    if(!task || typeof task  !=="string" || task.trim()===""){
-        return res.status(400).json({error: "task is requires. you should provide non-empty string"});
+
+export async function createTodos(req, res){
+    try{
+        const {task} = req.body;
+        const todo = await createTodoService(task);
+        res.status(201).json({message:"Created", todo});
+    } catch(err){
+        res.status(400).json({error:err.message});
+    } 
+}
+
+export function toggleTodo(req, res){
+    const id = Number(req.params.id);
+    const todo = toggleTodoByIdService(id);
+
+    if(!todo){
+        return res.status(400).json({error : "Todo not found"});
     }
-}
+    res.json({message:"Toggled", todo});
 
-const todo ={id: nextId++, task:task.trim(), done:false};
-todos.push(todo);
-res.status(201).json({message:"created", todo});
+}
