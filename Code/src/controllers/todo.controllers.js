@@ -28,3 +28,15 @@ export function toggleTodo(req, res){
     res.json({message:"Toggled", todo});
 
 }
+
+
+export function removeTodo(req, res){
+    const id = Number(req.params.id);
+    const todo = deleteTodoByIdService(id);
+
+    if(!todo){
+        return res.status(400).json({error: "Todo not found"})
+    }
+
+    res.json({message:"Deleted Successfully"})
+}
